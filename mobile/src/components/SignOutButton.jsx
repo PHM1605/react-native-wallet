@@ -1,22 +1,25 @@
 // to use signOut() function from Clerk
 import {useAuth} from "@clerk/clerk-expo";
-import { Text, TouchableOpacity } from "react-native"
+import { Ionicons } from "@expo/vector-icons";
+import { Alert, Text, TouchableOpacity } from "react-native"
+import { COLORS } from "../../assets/styles/colors";
+import { styles } from "../../assets/styles/home.styles";
 
 export const SignOutButton = () => {
     const {signOut, isLoaded} = useAuth();
     if (!isLoaded) return null;
     
     const handleSignOut = async () => {
-        try {
-            await signOut(); // redirect to "sign-in" page (read (root)=>_layout.jsx)
-        } catch(err) {
-            console.error(JSON.stringify(err, null, 2))
-        }
+        // Confirmation first before logout
+        Alert.alert("Logout", "Are you sure you want to logout?", [
+            { text: "Cancel", style: "cancel" },
+            { text: "Logout", style: "destructive", onPress: signOut }
+        ])
     }
     
     return (
-        <TouchableOpacity onPress={handleSignOut}>
-            <Text>Sign out</Text>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
+            <Ionicons name="log-out-outline" size={22} color={COLORS.text} />
         </TouchableOpacity>
     )
 }
