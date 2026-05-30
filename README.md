@@ -1,10 +1,22 @@
-Neon for DB
+For DB: `Neon`
 
-Clerk for authentication
+For authentication: `Clerk`
 
-Upstash for "Rate Limiting" using "Redis"
+For "Rate Limiting" using "Redis": `Upstash`
+
+Cloud to test deployment: `Render`
 
 Command to run: `npx expo start`
+
+Command to install `vector-icons`
+```sh
+npx expo install @expo/vector-icons
+```
+
+Command to install keyboard that avoid sitting on view
+```sh
+npm i react-native-keyboard-aware-scroll-view
+```
 
 Link to tutorial:
 ```sh
