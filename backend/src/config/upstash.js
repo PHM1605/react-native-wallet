@@ -1,5 +1,5 @@
 import { Redis } from "@upstash/redis"
-import { Ratelimit } from "@upstash/rateLimit"
+import { Ratelimit } from "@upstash/ratelimit"
 import "dotenv/config";
 
 // console.log(process.env)
