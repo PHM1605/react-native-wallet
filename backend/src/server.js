@@ -3,11 +3,14 @@ import dotenv from "dotenv"
 import { initDB } from "./config/db.js"
 import rateLimiter from "./middleware/rateLimiter.js"
 import transactionsRoute from "./routes/transactionsRoute.js"
+import job from "./config/cron.js"
 
 dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 5001
+
+if (process.env.NODE_ENV === "production") job.start()
 
 // middleware
 app.use(rateLimiter) // limit for a user to send e.g. 4 requests per minute only
@@ -16,6 +19,10 @@ app.use(express.json())
 //     console.log("Hey we hit a req, the method is ", req.method)
 //     next()
 // })
+
+app.get("/api/health", (req, res) => {
+    res.status(200).json({status: "ok"});
+})
 
 app.use("/api/transactions", transactionsRoute)
 
