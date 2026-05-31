@@ -18,7 +18,14 @@ Command to install keyboard that avoid sitting on view
 npm i react-native-keyboard-aware-scroll-view
 ```
 
+Check health of public deployment
+```sh
+https://wallet-app-ynhb.onrender.com/api/health
+```
+
 Link to tutorial:
 ```sh
 https://www.youtube.com/watch?v=vk13GJi4Vd0&t=5772s
 ```
+
+Screenshot
