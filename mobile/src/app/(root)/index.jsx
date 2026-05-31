@@ -1,13 +1,16 @@
 // Homepage: decides "SignedIn" or "SignedOut" screen to be shown to user
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo"; // screens from Clerk
 import { Link, useRouter } from "expo-router";
-import { Text, View, Image, TouchableOpacity } from "react-native"
+import { Text, View, Image, TouchableOpacity, FlatList, Alert, RefreshControl } from "react-native"
 import { SignOutButton } from "../../components/SignOutButton";
 import PageLoader from "../../components/PageLoader";
 import { useTransactions } from "../../hooks/useTransactions";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { styles } from "../../../assets/styles/home.styles";
 import { Ionicons } from "@expo/vector-icons";
+import { BalanceCard } from "../../components/BalanceCard";
+import { TransactionItem } from "../../components/TransactionItem";
+import NoTransactionsFound from "../../components/NoTransactionsFound";
 
 export default function Page() {
     // status of current user
@@ -15,12 +18,28 @@ export default function Page() {
     const router = useRouter();
     // use transaction hook to fetch data
     const {transactions, summary, isLoading, loadData, deleteTransaction } = useTransactions(user.id);
+    // when user swipes down to refresh the long Transactions List => load data again from server
+    const [refreshing, setRefreshing] = useState(false);
     
     useEffect(() => {
         loadData()
     }, [])
     
-    if (isLoading) return <PageLoader />
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await loadData();
+        setRefreshing(false);
+    }
+    
+    const handleDelete = (id) => {
+        // asking for confirmation
+        Alert.alert("Delete Transaction", "Are you sure you want to delete this transactions?", [
+            {text: "Cancel", style: "cancel"},
+            {text: "Delete", style: "destructive", onPress: () => deleteTransaction(id)}
+        ])
+    }
+    
+    if (isLoading && !refreshing) return <PageLoader />
     
     return (
         <View style={styles.container}>
@@ -52,8 +71,26 @@ export default function Page() {
                     </View>
                 </View>
                 {/* BALANCE CARD */}
-                
+                <BalanceCard summary={summary} />
+                {/* RECENT TRANSACTIONS */}
+                <View style={styles.transactionsHeaderContainer}>
+                    <Text style={styles.sectionTitle}>Recent Transactions</Text>
+                </View>
             </View>
+            
+            {/* LIST OF TRANSACTIONS */}
+            {/* FlatList has "lazy" operation - only render ONLY first items on screen */}
+            <FlatList 
+                style={styles.transactionsList}
+                contentContainerStyle={styles.transactionsListContent}
+                data={transactions}
+                renderItem={(item) => ( 
+                    <TransactionItem item={item.item} onDelete={handleDelete}/>
+                )}
+                ListEmptyComponent={<NoTransactionsFound />}
+                showsVerticalScrollIndicator={false}
+                refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> }
+            />
         </View>
     )
 }
